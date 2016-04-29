@@ -4,7 +4,7 @@
 #
 Name     : sg3_utils
 Version  : 1.42
-Release  : 9
+Release  : 10
 URL      : http://sg.danny.cz/sg/p/sg3_utils-1.42.tgz
 Source0  : http://sg.danny.cz/sg/p/sg3_utils-1.42.tgz
 Summary  : Utilities for devices that use SCSI command sets
