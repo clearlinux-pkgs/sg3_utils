@@ -4,7 +4,7 @@
 #
 Name     : sg3_utils
 Version  : 1.43r785
-Release  : 12
+Release  : 13
 URL      : http://sg.danny.cz/sg/p/sg3_utils-1.43r785.tar.xz
 Source0  : http://sg.danny.cz/sg/p/sg3_utils-1.43r785.tar.xz
 Summary  : Utilities for devices that use SCSI command sets
