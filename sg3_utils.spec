@@ -4,16 +4,16 @@
 #
 Name     : sg3_utils
 Version  : 1.43r785
-Release  : 13
+Release  : 14
 URL      : http://sg.danny.cz/sg/p/sg3_utils-1.43r785.tar.xz
 Source0  : http://sg.danny.cz/sg/p/sg3_utils-1.43r785.tar.xz
 Summary  : Utilities for devices that use SCSI command sets
 Group    : Development/Tools
-License  : BSD-3-Clause GPL-2.0 GPL-2.0+
-Requires: sg3_utils-bin
-Requires: sg3_utils-lib
-Requires: sg3_utils-license
-Requires: sg3_utils-man
+License  : BSD-2-Clause BSD-3-Clause GPL-2.0 GPL-2.0+
+Requires: sg3_utils-bin = %{version}-%{release}
+Requires: sg3_utils-lib = %{version}-%{release}
+Requires: sg3_utils-license = %{version}-%{release}
+Requires: sg3_utils-man = %{version}-%{release}
 
 %description
 Collection of Linux utilities for devices that use the SCSI command set.
@@ -33,8 +33,7 @@ and the incorrect usage of them may render your system inoperable.
 %package bin
 Summary: bin components for the sg3_utils package.
 Group: Binaries
-Requires: sg3_utils-license
-Requires: sg3_utils-man
+Requires: sg3_utils-license = %{version}-%{release}
 
 %description bin
 bin components for the sg3_utils package.
@@ -43,9 +42,10 @@ bin components for the sg3_utils package.
 %package dev
 Summary: dev components for the sg3_utils package.
 Group: Development
-Requires: sg3_utils-lib
-Requires: sg3_utils-bin
-Provides: sg3_utils-devel
+Requires: sg3_utils-lib = %{version}-%{release}
+Requires: sg3_utils-bin = %{version}-%{release}
+Provides: sg3_utils-devel = %{version}-%{release}
+Requires: sg3_utils = %{version}-%{release}
 
 %description dev
 dev components for the sg3_utils package.
@@ -54,7 +54,7 @@ dev components for the sg3_utils package.
 %package lib
 Summary: lib components for the sg3_utils package.
 Group: Libraries
-Requires: sg3_utils-license
+Requires: sg3_utils-license = %{version}-%{release}
 
 %description lib
 lib components for the sg3_utils package.
@@ -78,36 +78,50 @@ man components for the sg3_utils package.
 
 %prep
 %setup -q -n sg3_utils-1.43r785
+cd %{_builddir}/sg3_utils-1.43r785
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1534991250
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1604355648
+export GCC_IGNORE_WERROR=1
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 "
+export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
 %configure --disable-static
 make  %{?_smp_mflags}
 
 %check
-export LANG=C
+export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-make VERBOSE=1 V=1 %{?_smp_mflags} check
+make %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1534991250
+export SOURCE_DATE_EPOCH=1604355648
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/doc/sg3_utils
-cp COPYING %{buildroot}/usr/share/doc/sg3_utils/COPYING
+mkdir -p %{buildroot}/usr/share/package-licenses/sg3_utils
+cp %{_builddir}/sg3_utils-1.43r785/BSD_LICENSE %{buildroot}/usr/share/package-licenses/sg3_utils/f2d373f60508c38ab50afee7e28a502a2863805e
+cp %{_builddir}/sg3_utils-1.43r785/COPYING %{buildroot}/usr/share/package-licenses/sg3_utils/c965aae831c0bc8fa65d618684aa8fdece7bc9d8
+cp %{_builddir}/sg3_utils-1.43r785/debian/copyright %{buildroot}/usr/share/package-licenses/sg3_utils/f2d373f60508c38ab50afee7e28a502a2863805e
+cp %{_builddir}/sg3_utils-1.43r785/lib/BSD_LICENSE %{buildroot}/usr/share/package-licenses/sg3_utils/f2d373f60508c38ab50afee7e28a502a2863805e
+cp %{_builddir}/sg3_utils-1.43r785/src/BSD_LICENSE %{buildroot}/usr/share/package-licenses/sg3_utils/f2d373f60508c38ab50afee7e28a502a2863805e
 %make_install
+## Remove excluded files
+rm -f %{buildroot}/usr/bin/sg_write_buffer
 
 %files
 %defattr(-,root,root,-)
 
 %files bin
 %defattr(-,root,root,-)
-%exclude /usr/bin/sg_write_buffer
 /usr/bin/rescan-scsi-bus.sh
 /usr/bin/scsi_logging_level
 /usr/bin/scsi_mandat
@@ -208,11 +222,12 @@ cp COPYING %{buildroot}/usr/share/doc/sg3_utils/COPYING
 /usr/lib64/libsgutils2.so.2.0.0
 
 %files license
-%defattr(-,root,root,-)
-/usr/share/doc/sg3_utils/COPYING
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/sg3_utils/c965aae831c0bc8fa65d618684aa8fdece7bc9d8
+/usr/share/package-licenses/sg3_utils/f2d373f60508c38ab50afee7e28a502a2863805e
 
 %files man
-%defattr(-,root,root,-)
+%defattr(0644,root,root,0755)
 /usr/share/man/man8/rescan-scsi-bus.sh.8
 /usr/share/man/man8/scsi_logging_level.8
 /usr/share/man/man8/scsi_mandat.8
